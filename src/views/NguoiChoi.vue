@@ -14,6 +14,7 @@ export default {
       const cellId = X.toString() + Y.toString();
       const cellElement = document.getElementById(cellId);
       cellElement.style.backgroundColor = "#F6CD61";
+      console.log("doi mau X Y");
     },
     GetColor(id) {
       const rgb = window.getComputedStyle(this.$refs[id]).backgroundColor;
