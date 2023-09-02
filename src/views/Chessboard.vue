@@ -125,6 +125,9 @@ export default {
       possibleMoves: [], 
       pieceKeys: {},
       shouldShow: false,
+      preRow: null,
+      preCol: null,
+      preId: '00',
     };
   },
   methods: {
@@ -156,10 +159,11 @@ export default {
     },
     ...NguoiChoi.methods,
 
-    
-      
       handleCar(id) {
+        console.log("handl"  + id);
+        if(this.isCheckMove(this.preId, id) || this.preId == '00')
         this.$refs.car.Car(id);
+        return false;
       },
       handleHorses(id) {
         this.$refs.horses.Horses(id); 
@@ -178,15 +182,72 @@ export default {
       },
       ...LuotDi.setup(),
 
-      
+      removeHighlightFromAllCells() {
+        const cells = document.querySelectorAll(".highlighted");
+        cells.forEach((cell) => {
+          cell.classList.remove("highlighted");
+        });
+      },
+      isCheckMove(id, currentId){
+        const X = id.charAt(0);
+        const Y = id.charAt(1);
+        // kiểm tra với từng trường hợp
+        const nuocDi = this.findRookMoves(X,Y);
+        console.log(nuocDi);
+        console.log("preid" + id);
+        console.log("current id = " + currentId);
+        console.log("res = " + nuocDi.includes(id));
+        return nuocDi.includes(currentId.toString());
+      },
+    findRookMoves(row, column) {
+    const rookMoves = [];
+    
+    // Xác định tất cả các ô cờ trên cùng hàng
+    for (let i = 1; i <= 8; i++) {
+      if (i !== column) {
+        rookMoves.push(`${row}${i}`);
+      }
+    }
+    
+    // Xác định tất cả các ô cờ trên cùng cột
+    for (let i = 1; i <= 8; i++) {
+      if (i !== row) {
+        rookMoves.push(`${i}${column}`);
+      }
+    }
+    
+    return rookMoves;
+  },
       cellClick(id) {
+        // vẽ lại bàn cờ xoá hết high light
+        if(this.isCheckMove(this.preId, id) || this.preId == '00'){
+          this.VeBanCoTrangDen();
+          const imgElement = document.getElementById("i"+this.preId);
+          // xoá cái cũ
+          if (imgElement) {
+            imgElement.src="";
+          }
+          // Thêm vào vị trí mới
+          const imgElementI = document.getElementById("i"+id);
+          if (imgElementI) {
+            imgElementI.src = "./src/assets/image/piece/Xe_Do.png"; // Đặt URL hình ảnh ở đây
+          }
+        }
+        // remove ảnh ở vị trí preId
+        
+        console.log("id = " + id);
         this.clickedPieceKey = this.getPieceKey(id);
         console.log('clickedPieceKey',this.clickedPieceKey);
+        
+        // insert ảnh vào ô id
         
         if(this.selectedPiece === "Xe") {
           // this.shouldShow === true;
 
-          return this.handleCar(id);
+          this.handleCar(id);
+          if(this.isCheckMove(this.preId, id) || this.preId == '00')
+          this.preId = id
+          return;
         } else if (this.selectedPiece === "Ma") {
           return this.handleHorses(id);
         } else if (this.selectedPiece === "Vua") {
@@ -236,7 +297,12 @@ export default {
       
     
       clickCell(row, column) {
+          console.log(this.preRow + "test");
+
+        // gọi hàm clear 
           const id = `${row}${column}`;
+          this.preRow = row;
+          this.preCol = column;
         
         if (this.isCoDo(row, column)) {
           this.LuotDi(); 
@@ -251,7 +317,9 @@ export default {
         }
     
       },
-      
+      clearHighLight(){
+
+      },
     
     submitForm() {
       const data = [];
@@ -327,6 +395,17 @@ export default {
   mounted() {
     this.VeBanCoTrangDen();
   },
+  watch:
+    {
+      
+        preRow(newPreRow, oldPreRow) {
+          console.log(123);
+        // Xử lý khi giá trị của preRow thay đổi
+        console.log("preRow đã thay đổi từ", oldPreRow, "sang", newPreRow);
+
+        // Thực hiện các hành động cần thiết khi preRow thay đổi
+      },
+    }
 };
 </script>
 

@@ -75,6 +75,7 @@
   
       DoiMau(X, Y) {
         // Định nghĩa hàm DoiMau tại đây
+        console.log("doi mau x y");
       },
     },
   };
